@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, jsonify
 from pymongo import MongoClient
+from bson import json_util
 import requests
 from pprint import pprint
 
@@ -15,20 +16,16 @@ Standings = db.Standings
 headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
 
 
-@app.route("/PremeirLeague")
+@app.route("/PremeirLeague/Matches")
 def getallPremeirLeague():
-    url = "https://app.sportdataapi.com/api/v1/soccer/matches"
-    params = {"season_id": "352"}
-    data = requests.get(url, headers=headers, params=params).json()
-    return data
+    data = Matches.find({"season_id": 352})
+    return json_util.dumps(data)
 
 
-@app.route("/LaLiga")
+@app.route("/LaLiga/Matches")
 def getallLaLiga():
-    url = "https://app.sportdataapi.com/api/v1/soccer/matches"
-    params = {"season_id": "1511"}
-    data = requests.get(url, headers=headers, params=params).json()
-    return data
+    data = Matches.find({"season_id": 1511})
+    return json_util.dumps(data)
 
 
 def prepareDB():
@@ -54,7 +51,6 @@ def prepareLeaguesDB():
     if "Leagues" in db.list_collection_names():
         i = 0
         for obj in Leagues.find({}):
-            pprint(datas[i]["name"])
             Leagues.replace_one({"_id": obj["_id"]}, datas[i])
             i += 1
     else:
@@ -152,5 +148,5 @@ def prepareStandings():
 
 
 if __name__ == "__main__":
-    prepareDB()
+    # prepareDB()
     app.run()
