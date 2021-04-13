@@ -11,6 +11,7 @@ client = MongoClient("mongodb://localhost:27017/")
 # database name
 db = client["SoccerScore"]
 Leagues = db.Leagues
+Teams = db.Teams
 Matches = db.Matches
 Standings = db.Standings
 headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
@@ -30,6 +31,7 @@ def getallLaLiga():
 
 def prepareDB():
     prepareLeaguesDB()
+    prepareTeamDB()
     prepareMatchesDB()
     prepareStandings()
 
@@ -41,11 +43,10 @@ def prepareLeaguesDB():
 
     datas = list()
     for i in range(len(leagues)):
-        data = dict()
-        data["league_id"] = leagues[i]["league_id"]
-        data["name"] = leagues[i]["name"]
-        data["season_data"] = seasons[i]
-        datas.append(data)
+        league_data = dict()
+        league_data = leagues[i]
+        league_data["season_data"] = seasons[i]
+        datas.append(league_data)
 
     # check is first init
     if "Leagues" in db.list_collection_names():
@@ -79,12 +80,30 @@ def getLeagueSeasonInfo(leagues):
     return seasonData
 
 
+### TeamDB ###
+def prepareTeamDB():
+    firstInit = isFirstInit("Teams")
+
+    for league in Leagues.find({}):
+        # print(league["country_id"])
+
+        params = {"country_id": league["country_id"]}
+        response = requests.get(
+            "https://app.sportdataapi.com/api/v1/soccer/teams", headers=headers, params=params
+        ).json()
+
+        data = {"country_id": league["country_id"], "teams": response["data"]}
+        # pprint(data)
+
+        if firstInit:
+            Teams.insert_one(data)
+        else:
+            Teams.replace_one({"country_id": data["country_id"]}, data)
+
+
 ### MatchesDB ###
 def prepareMatchesDB():
-    firstInit = False
-    if "Matches" not in db.list_collection_names():
-        db.create_collection("Matches")
-        firstInit = True
+    firstInit = isFirstInit("Matches")
 
     current_season_list = getSeasonID()
     url = "https://app.sportdataapi.com/api/v1/soccer/matches"
@@ -122,10 +141,7 @@ def getSeasonID():
 
 ### Standings ###
 def prepareStandings():
-    firstInit = False
-    if "Standings" not in db.list_collection_names():
-        db.create_collection("Standings")
-        firstInit = True
+    firstInit = isFirstInit("Standings")
 
     current_season_list = getSeasonID()
     url = "https://app.sportdataapi.com/api/v1/soccer/standings"
@@ -134,11 +150,6 @@ def prepareStandings():
         current_season = current_season_list[i]
         params = {"season_id": current_season}
         data = requests.get(url, headers=headers, params=params).json()["data"]
-        for s in range(len(data["standings"])):
-            team_id = data["standings"][s]["team_id"]
-            team_url = "https://app.sportdataapi.com/api/v1/soccer/teams/" + str(team_id)
-            team_data = requests.get(team_url, headers=headers).json()["data"]
-            data["standings"][s]["team_data"] = team_data
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if firstInit:
@@ -147,6 +158,14 @@ def prepareStandings():
             Standings.replace_one({"season_id": data["season_id"]}, data)
 
 
+def isFirstInit(collection):
+    firstInit = False
+    if collection not in db.list_collection_names():
+        db.create_collection(collection)
+        firstInit = True
+    return firstInit
+
+
 if __name__ == "__main__":
-    # prepareDB()
-    app.run()
+    prepareDB()
+    # app.run()
