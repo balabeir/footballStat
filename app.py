@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from bson import json_util
 import requests
@@ -18,10 +18,37 @@ Standings = db.Standings
 headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
 
 
-# @app.route("/PremeirLeague/Matches")
-# def getallPremeirLeague():
-#     data = Matches.find({"season_id": 352})
-#     return json_util.dumps(data)
+@app.route("/standings/", methods=["GET"])
+def getLeagueStandings():
+
+    # current premierLeague ss = 352 and LaLiga = 1511
+    seasons_id = int(request.form["season_id"])
+
+    cursors = Standings.find({"season_id": seasons_id})
+    data = list()
+
+    # setting format the json data
+    for standing_obj in cursors:
+        standings = standing_obj["standings"]
+        # print(type(standings))
+
+        # find match  team_data (team_name and team_logo) and put to array data
+        for team in standings:
+            pprint(team)
+            team_id = team["team_id"]
+            print(team["team_id"])
+
+            # find team_data
+            team_data = Teams.find({"team_id": team_id})
+            for item in team_data:
+                team["team_logo"] = item["logo"]
+                team["team_name"] = item["name"]
+                print("AFTER--------------")
+                pprint(team)
+
+        data = standings
+
+    return json_util.dumps(data)
 
 
 # @app.route("/LaLiga/Matches")
@@ -144,5 +171,5 @@ def prepareStandings():
 
 
 if __name__ == "__main__":
-    prepareDB()
-    # app.run()
+    # prepareDB()
+    app.run()
