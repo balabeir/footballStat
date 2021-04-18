@@ -3,6 +3,8 @@ from pymongo import MongoClient
 from bson import json_util
 import requests
 from pprint import pprint
+from datetime import datetime
+from pytz import timezone
 
 
 app = Flask(__name__)
@@ -25,8 +27,8 @@ def getLeagueStandings():
     seasons_id = int(request.form["season_id"])
 
     cursors = Standings.find({"season_id": seasons_id})
-    data = list()
 
+    data = list()
     # setting format the json data
     for standing_obj in cursors:
         standings = standing_obj["standings"]
@@ -51,17 +53,41 @@ def getLeagueStandings():
     return json_util.dumps(data)
 
 
-# @app.route("/LaLiga/Matches")
-# def getallLaLiga():
-#     data = Matches.find({"season_id": 1511})
-#     return json_util.dumps(data)
+@app.route("/matches")
+def getMatches():
+    # current premierLeague ss = 352 and LaLiga = 1511
+    seasons_id = int(request.form["season_id"])
+
+    # check date filter is exist
+    # date format is Y-m=d H:M:S
+    if "date_from" in request.form:
+        date_from = request.form["date_from"]
+        print("from", date_from)
+
+        if "date_to" in request.form:
+            date_to = request.form["date_to"]
+            print("to", date_to)
+
+            # if use all filter
+            data = Matches.find({"season_id": seasons_id, "match_start_th": {"$gt": date_from, "$lt": date_to}})
+            return json_util.dumps(data)
+
+        # if use only date_from
+        data = Matches.find({"season_id": seasons_id, "match_start_th": {"$gt": date_from}})
+
+    else:
+        # not use filter
+        data = Matches.find({"season_id": seasons_id})
+
+    return json_util.dumps(data)
 
 
 def prepareDB():
-    prepareLeaguesDB()
-    prepareTeamDB()
-    prepareMatchesDB()
-    prepareStandings()
+    # prepareLeaguesDB()
+    # prepareTeamDB()
+    # prepareMatchesDB()
+    # prepareStandings()
+    return 0
 
 
 ### LeaguesDB ###
@@ -139,6 +165,7 @@ def prepareMatchesDB():
 
         for match in sortedData:
             filter = {"match_id": match["match_id"]}
+            match["match_start_th"] = toThaiTime(match["match_start"])
             update = {"$set": match}
             Matches.update_one(filter=filter, update=update, upsert=True)
 
@@ -152,6 +179,24 @@ def getSeasonID():
                 current_season_list.append(season["season_id"])
                 break
     return current_season_list
+
+
+def toThaiTime(str_time):
+    # time format
+    fmt = "%Y-%m-%d %H:%M:%S"
+
+    # convert str to datetime
+    time_obj = datetime.strptime(str_time, fmt)
+
+    # set default time zone
+    timezone_default = timezone("UTC")
+    default_datetime_obj = timezone_default.localize(time_obj)
+
+    # convert thai time zone
+    timezone_bkk = timezone("Asia/Bangkok")
+    bkk_datetime_obj = default_datetime_obj.astimezone(timezone_bkk)
+
+    return bkk_datetime_obj.strftime(fmt)
 
 
 ### Standings Ranking ###
@@ -171,5 +216,5 @@ def prepareStandings():
 
 
 if __name__ == "__main__":
-    # prepareDB()
+    prepareDB()
     app.run()
