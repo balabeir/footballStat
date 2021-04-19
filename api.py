@@ -83,11 +83,11 @@ def getMatches():
 
 
 def prepareDB():
-    # prepareLeaguesDB()
-    # prepareTeamDB()
-    # prepareMatchesDB()
-    # prepareStandings()
-    return 0
+    prepareLeaguesDB()
+    prepareTeamDB()
+    prepareMatchesDB()
+    prepareStandings()
+    # return 0
 
 
 ### LeaguesDB ###
