@@ -82,10 +82,10 @@ def getMatches(ss_id):
 
 
 def prepareDB():
-    # prepareLeaguesDB()
-    # prepareTeamDB()
-    # prepareMatchesDB()
-    # prepareStandings()
+    prepareLeaguesDB()
+    prepareTeamDB()
+    prepareMatchesDB()
+    prepareStandings()
     return 0
 
 
