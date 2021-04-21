@@ -20,11 +20,11 @@ Standings = db.Standings
 headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
 
 
-@app.route("/standings/", methods=["GET"])
-def getLeagueStandings():
+@app.route("/standings/<ss_id>", methods=["GET"])
+def getLeagueStandings(ss_id):
 
     # current premierLeague ss = 352 and LaLiga = 1511
-    seasons_id = int(request.form["season_id"])
+    seasons_id = int(ss_id)
 
     cursors = Standings.find({"season_id": seasons_id})
 
@@ -36,36 +36,35 @@ def getLeagueStandings():
 
         # find match  team_data (team_name and team_logo) and put to array data
         for team in standings:
-            pprint(team)
             team_id = team["team_id"]
-            print(team["team_id"])
 
             # find team_data
             team_data = Teams.find({"team_id": team_id})
             for item in team_data:
                 team["team_logo"] = item["logo"]
                 team["team_name"] = item["name"]
-                print("AFTER--------------")
-                pprint(team)
 
         data = standings
 
     return json_util.dumps(data)
 
 
-@app.route("/matches")
-def getMatches():
+@app.route("/matches/<ss_id>")
+def getMatches(ss_id):
     # current premierLeague ss = 352 and LaLiga = 1511
-    seasons_id = int(request.form["season_id"])
+    seasons_id = int(ss_id)
+
+    # query string (date_from, date_to)
+    args = request.args
 
     # check date filter is exist
     # date format is Y-m=d H:M:S
-    if "date_from" in request.form:
-        date_from = request.form["date_from"]
+    if "date_from" in args:
+        date_from = args["date_from"]
         print("from", date_from)
 
-        if "date_to" in request.form:
-            date_to = request.form["date_to"]
+        if "date_to" in args:
+            date_to = args["date_to"]
             print("to", date_to)
 
             # if use all filter
@@ -83,11 +82,11 @@ def getMatches():
 
 
 def prepareDB():
-    prepareLeaguesDB()
-    prepareTeamDB()
-    prepareMatchesDB()
-    prepareStandings()
-    # return 0
+    # prepareLeaguesDB()
+    # prepareTeamDB()
+    # prepareMatchesDB()
+    # prepareStandings()
+    return 0
 
 
 ### LeaguesDB ###
