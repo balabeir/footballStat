@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from pymongo import MongoClient
 from bson import json_util
 import requests
@@ -8,6 +9,7 @@ from pytz import timezone
 
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 # mongo database URI
 client = MongoClient("mongodb://localhost:27017/")
@@ -61,11 +63,11 @@ def getMatches(ss_id):
     # date format is Y-m=d H:M:S
     if "date_from" in args:
         date_from = args["date_from"]
-        print("from", date_from)
+        # print("from", date_from)
 
         if "date_to" in args:
             date_to = args["date_to"]
-            print("to", date_to)
+            # print("to", date_to)
 
             # if use all filter
             data = Matches.find({"season_id": seasons_id, "match_start_th": {"$gt": date_from, "$lt": date_to}})
