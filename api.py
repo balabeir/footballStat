@@ -48,7 +48,7 @@ def getLeagueStandings(ss_id):
 
         data = standings
 
-    return json_util.dumps(data)
+    return json_util.dumps({"data": data})
 
 
 @app.route("/matches/<ss_id>")
@@ -71,7 +71,7 @@ def getMatches(ss_id):
 
             # if use all filter
             data = Matches.find({"season_id": seasons_id, "match_start_th": {"$gt": date_from, "$lt": date_to}})
-            return json_util.dumps(data)
+            return json_util.dumps({"data": data})
 
         # if use only date_from
         data = Matches.find({"season_id": seasons_id, "match_start_th": {"$gt": date_from}})
@@ -80,14 +80,14 @@ def getMatches(ss_id):
         # not use filter
         data = Matches.find({"season_id": seasons_id})
 
-    return json_util.dumps(data)
+    return json_util.dumps({"data": data})
 
 
 def prepareDB():
-    prepareLeaguesDB()
-    prepareTeamDB()
-    prepareMatchesDB()
-    prepareStandings()
+    # prepareLeaguesDB()
+    # prepareTeamDB()
+    # prepareMatchesDB()
+    # prepareStandings()
     return 0
 
 
