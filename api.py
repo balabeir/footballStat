@@ -1,9 +1,8 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson import json_util
 import requests
-from pprint import pprint
 from datetime import datetime
 from pytz import timezone
 
