@@ -83,6 +83,13 @@ def getMatches(ss_id):
     return json_util.dumps({"data": data})
 
 
+@app.route("/match-detail/<m_id>")
+def getMatchDetail(m_id):
+    match_id = int(m_id)
+    data = Matches.find_one({"match_id": match_id})
+    return json_util.dumps({"data": data})
+
+
 def prepareDB():
     # prepareLeaguesDB()
     # prepareTeamDB()
