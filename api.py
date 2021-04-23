@@ -6,6 +6,8 @@ import requests
 from datetime import datetime
 from pytz import timezone
 
+from pprint import pprint
+
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -19,6 +21,12 @@ Teams = db.Teams
 Matches = db.Matches
 Standings = db.Standings
 headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
+
+
+@app.route("/leagues/", methods=["GET"])
+def getAllLeague():
+    data = Leagues.find({})
+    return json_util.dumps({"data": data})
 
 
 @app.route("/standings/<ss_id>", methods=["GET"])
@@ -50,7 +58,7 @@ def getLeagueStandings(ss_id):
     return json_util.dumps({"data": data})
 
 
-@app.route("/matches/<ss_id>")
+@app.route("/matches/<ss_id>", methods=["GET"])
 def getMatches(ss_id):
     # current premierLeague ss = 352 and LaLiga = 1511
     seasons_id = int(ss_id)
