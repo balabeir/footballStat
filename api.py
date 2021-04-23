@@ -166,7 +166,7 @@ def prepareTeamDB():
 ### MatchesDB ###
 def prepareMatchesDB():
 
-    current_season_list = getSeasonID()  # get current season form subscrib Leagues
+    current_season_list = getAllCurrentSeasonID()  # get current season form subscrib Leagues
     url = "https://app.sportdataapi.com/api/v1/soccer/matches"
 
     datas = list()
@@ -185,7 +185,7 @@ def prepareMatchesDB():
             Matches.update_one(filter=filter, update=update, upsert=True)
 
 
-def getSeasonID():
+def getAllCurrentSeasonID():
     current_season_list = list()
     for obj in Leagues.find({}):
         seasons = obj["season_data"]
@@ -217,7 +217,7 @@ def toThaiTime(str_time):
 ### Standings Ranking ###
 def prepareStandings():
 
-    current_season_list = getSeasonID()
+    current_season_list = getAllCurrentSeasonID()
     url = "https://app.sportdataapi.com/api/v1/soccer/standings"
 
     for i in range(len(current_season_list)):
