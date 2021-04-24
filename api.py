@@ -99,10 +99,10 @@ def getMatchDetail(m_id):
 
 def prepareDB():
     # print("start update Database")
-    # prepareLeaguesDB()
-    # prepareTeamDB()
-    # prepareMatchesDB()
-    # prepareStandings()
+    prepareLeaguesDB()
+    prepareTeamDB()
+    prepareMatchesDB()
+    prepareStandings()
     # print("Database update was successful. ")
     return 0
 
@@ -183,6 +183,8 @@ def prepareMatchesDB():
         for match in sortedData:
             filter = {"match_id": match["match_id"]}
             match["match_start_th"] = toThaiTime(match["match_start"])
+            match["match_date_th"] = match["match_start_th"][0:10]
+            match["match_time_th"] = match["match_start_th"][11:]
             update = {"$set": match}
             Matches.update_one(filter=filter, update=update, upsert=True)
 
