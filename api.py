@@ -5,7 +5,7 @@ from bson import json_util
 import requests
 from datetime import datetime
 from pytz import timezone
-
+from apscheduler.schedulers.background import BackgroundScheduler
 from pprint import pprint
 
 
@@ -98,10 +98,12 @@ def getMatchDetail(m_id):
 
 
 def prepareDB():
+    # print("start update Database")
     # prepareLeaguesDB()
     # prepareTeamDB()
     # prepareMatchesDB()
     # prepareStandings()
+    # print("Database update was successful. ")
     return 0
 
 
@@ -231,5 +233,8 @@ def prepareStandings():
 
 
 if __name__ == "__main__":
+    update_schedule = BackgroundScheduler(daemon=True)
+    update_schedule.add_job(prepareDB, "interval", hours=60)
+    update_schedule.start()
     prepareDB()
     app.run()
