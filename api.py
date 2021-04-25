@@ -20,7 +20,7 @@ Leagues = db.Leagues
 Teams = db.Teams
 Matches = db.Matches
 Standings = db.Standings
-headers = {"apikey": os.getenv("api_key")}
+headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
 
 
 @app.route("/leagues/", methods=["GET"])
