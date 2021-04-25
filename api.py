@@ -6,21 +6,21 @@ import requests
 from datetime import datetime
 from pytz import timezone
 from apscheduler.schedulers.background import BackgroundScheduler
-from pprint import pprint
+import os
 
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 # mongo database URI
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(os.getenv("db"))
 # database name
 db = client["SoccerScore"]
 Leagues = db.Leagues
 Teams = db.Teams
 Matches = db.Matches
 Standings = db.Standings
-headers = {"apikey": "6f889a60-8edd-11eb-9084-05c23de9546d"}
+headers = {"apikey": os.getenv("api_key")}
 
 
 @app.route("/leagues/", methods=["GET"])
