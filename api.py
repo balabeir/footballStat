@@ -185,20 +185,6 @@ def prepareMatchesDB():
             match["match_start_th"] = toThaiTime(match["match_start"])
             match["match_date_th"] = match["match_start_th"][0:10]
             match["match_time_th"] = match["match_start_th"][11:]
-            match["away_team"] = Teams.find_one(
-                {
-                    "short_code": match["away_team"]["short_code"],
-                    "name": match["away_team"]["name"],
-                },
-                {"_id": 0},
-            )
-            match["home_team"] = Teams.find_one(
-                {
-                    "short_code": match["home_team"]["short_code"],
-                    "name": match["home_team"]["name"],
-                },
-                {"_id": 0},
-            )
             update = {"$set": match}
             Matches.update_one(filter=filter, update=update, upsert=True)
 
