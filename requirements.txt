@@ -1,5 +1,5 @@
 Flask==1.1.2
-pymongo['srv']
+pymongo[srv]
 Flask_Cors==3.0.10
 pytz==2021.1
 requests==2.25.1
