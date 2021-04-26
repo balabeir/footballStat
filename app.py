@@ -12,9 +12,7 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 # mongo database URI
-client = MongoClient(
-    "mongodb+srv://admin:3cMr8dQtNeKzROXq@cluster0.hgtii.mongodb.net/SoccerScore?retryWrites=true&w=majority"
-)
+client = MongoClient("mongodb+srv://admin:3cMr8dQtNeKzROXq@cluster0.hgtii.mongodb.net")
 # database name
 db = client.SoccerScore
 Leagues = db.Leagues
