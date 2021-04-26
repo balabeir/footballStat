@@ -12,9 +12,12 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 # mongo database URI
-client = MongoClient("mongodb+srv://admin:3cMr8dQtNeKzROXq@cluster0.hgtii.mongodb.net")
+client = MongoClient(
+    "mongodb+srv://admin:3cMr8dQtNeKzROXq@cluster0.hgtii.mongodb.net"
+    # "mongodb://admin:NNAppn47420@node13003-soccer-api.app.ruk-com.cloud:11027"
+)
 # database name
-db = client.SoccerScore
+db = client["SoccerScore"]
 Leagues = db.Leagues
 Teams = db.Teams
 Matches = db.Matches
@@ -238,4 +241,4 @@ if __name__ == "__main__":
     update_schedule.add_job(prepareDB, "interval", hours=60)
     update_schedule.start()
     prepareDB()
-    app.run()
+    app.run(debug=True, port=80)
