@@ -241,4 +241,4 @@ if __name__ == "__main__":
     update_schedule.add_job(prepareDB, "interval", hours=60)
     update_schedule.start()
     prepareDB()
-    app.run(debug=True, port=80)
+    app.run()
